@@ -1,0 +1,3 @@
+Sebastian,Admin
+Manuela,Supervisor
+Luis,Cajero
