@@ -1,7 +1,8 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QWidget, QVBoxLayout, QLabel, QPushButton
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QPixmap, QFont, QIcon
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QVBoxLayout, QLabel, QPushButton
 from ayudas import Ayudas
+from usuarios import Usuarios
 
 class Administrar(QMainWindow):
 
@@ -10,6 +11,7 @@ class Administrar(QMainWindow):
         self.ventanaMenu = anterior
         # Poner título
         rol = Ayudas.rol
+
         usuario = Ayudas.usuario
         self.setWindowTitle(f"Fifre | {usuario}")
         # Establecer el ancho y el alto
@@ -31,7 +33,7 @@ class Administrar(QMainWindow):
         self.resize(self.imagenFondo.width(), self.imagenFondo.height())
         self.setCentralWidget(self.fondo)
 
-        # Diferencial
+        # Layout
         self.vertical = QVBoxLayout()
         self.titulo1 = QLabel()
         self.titulo1.setText("En esta pantalla el administrador podrá agregar borrar y editar los perfiles de usuario")
@@ -41,20 +43,22 @@ class Administrar(QMainWindow):
         self.titulo1.setFont(QFont("Andale Mono", 12))
         # para poner el letrero arriba
         self.vertical.addWidget(self.titulo1)
-        self.fondo.setLayout(self.vertical)
 
         self.vertical.addStretch()
 
         # Hacemos un botón para regresar a la ventana1
-        self.botonRegresar = QPushButton("Regresar")
+        self.botonRegresar = QPushButton(self)
         # Establecemos el ancho del botón
-        self.botonRegresar.setFixedWidth(150)
-        self.botonRegresar.setFont(QFont("Andale Mono", 12))
-        # Le ponemos al botón color de: fondo, texto y márgenes
-        self.botonRegresar.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 20px;')
+        self.botonRegresar.setIcon(QIcon('imagenes/Imagen4.png'))
+        self.botonRegresar.setFixedWidth(180)
+        self.botonRegresar.setIconSize(QSize(180, 180))
+        self.botonRegresar.setStyleSheet('background-color:transparent;')
         self.vertical.addWidget(self.botonRegresar)
         self.botonRegresar.clicked.connect(self.accionBotonRegresar)
 
+        # ------------ PONER AL FINAL -----------------
+
+        self.fondo.setLayout(self.vertical)
         # Hacemos el método para volver
 
     def accionBotonRegresar(self):

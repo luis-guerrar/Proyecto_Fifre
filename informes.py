@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QWidget, QVBoxLayout, QLabel, QPushButton
 from ayudas import Ayudas
 
@@ -46,12 +46,21 @@ class Informes(QMainWindow):
         self.vertical.addStretch()
 
         # Hacemos un botón para regresar a la ventana1
-        self.botonRegresar = QPushButton("Regresar")
+        '''self.botonRegresar = QPushButton("Regresar")
         # Establecemos el ancho del botón
         self.botonRegresar.setFixedWidth(150)
         self.botonRegresar.setFont(QFont("Andale Mono", 12))
         # Le ponemos al botón color de: fondo, texto y márgenes
         self.botonRegresar.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 20px;')
+        self.vertical.addWidget(self.botonRegresar)
+        self.botonRegresar.clicked.connect(self.accionBotonRegresar)'''
+        # Hacemos un botón para regresar a la ventana1
+        self.botonRegresar = QPushButton(self)
+        # Establecemos el ancho del botón
+        self.botonRegresar.setIcon(QIcon('imagenes/Imagen4.png'))
+        self.botonRegresar.setFixedWidth(180)
+        self.botonRegresar.setIconSize(QSize(180, 180))
+        self.botonRegresar.setStyleSheet('background-color:transparent;')
         self.vertical.addWidget(self.botonRegresar)
         self.botonRegresar.clicked.connect(self.accionBotonRegresar)
 

@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QDesktopWidget, QLabel, QMainWindow, QApplication, Q
 
 from ayudas import Ayudas
 from pantalla2 import Pantalla2
+
 class InicioSesion(QMainWindow):
     # Hacer el método constructor de la ventana
     def __init__(self):
@@ -123,9 +124,9 @@ class InicioSesion(QMainWindow):
 
 
     def leerPlano(self, ruta):
-        with open(ruta, 'r') as archivo:
+        with open('Archivos/datos.txt', 'r') as archivo:
             lineas = archivo.readlines()
-            usuarios = {}
+            usuarios = []
             for linea in lineas:
                 usuario, contrasena = linea.strip().split(',')
                 usuarios[usuario] = contrasena
@@ -133,6 +134,7 @@ class InicioSesion(QMainWindow):
             return usuarios
 
     def iniciarSesion(self):
+
         self.mensaje = QMessageBox()
         usuarios = self.leerPlano('Archivos/usuarios.txt')
         nombre_usuario = self.txtUsuario.text()
@@ -143,6 +145,11 @@ class InicioSesion(QMainWindow):
                 self.txtContrasena.setText("")
                 verRol = self.leerPlano('Archivos/roles.txt')
                 self.rolUsuario = verRol[nombre_usuario]
+
+
+
+
+
                 Ayudas.rol = self.rolUsuario
                 Ayudas.usuario = nombre_usuario
                 self.pantalla2 = Pantalla2(self)
