@@ -23,7 +23,6 @@ class Pantalla2(QMainWindow):
         self.mensaje.setWindowTitle(f"Hola {usuario}")
         self.mensaje.setInformativeText("¡Inicio de sesión correcto!")
         self.mensaje.exec_()
-
         # Establecer el ancho y el alto
         self.ancho = Ayudas.ancho
         self.alto = Ayudas.alto
@@ -58,7 +57,7 @@ class Pantalla2(QMainWindow):
         self.salir = QAction(QIcon("imagenes/Salir.png"), "Cerrar sesión | Salir", self)
         self.administrar = QAction(QIcon("imagenes/Administrar.png"), "Crear y modificar usuarios | Administrar", self)
 
-        if (rol == "Admin"):
+        if (rol == "Administrador"):
             self.barraHerramientas.addAction(self.compras)
             self.barraHerramientas.addAction(self.buscar)
             self.barraHerramientas.addAction(self.proveedores)

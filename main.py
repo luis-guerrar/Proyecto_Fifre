@@ -1,4 +1,3 @@
-import ctypes
 import sys
 
 from PyQt5.QtCore import Qt
@@ -8,6 +7,8 @@ from PyQt5.QtWidgets import QDesktopWidget, QLabel, QMainWindow, QApplication, Q
 
 from ayudas import Ayudas
 from pantalla2 import Pantalla2
+from usuarios import Usuarios
+
 
 class InicioSesion(QMainWindow):
     # Hacer el método constructor de la ventana
@@ -121,57 +122,71 @@ class InicioSesion(QMainWindow):
 
         self.fondo.setLayout(self.formulario)
 
-
-
-    def leerPlano(self, ruta):
-        with open('Archivos/datos.txt', 'r') as archivo:
-            lineas = archivo.readlines()
-            usuarios = []
-            for linea in lineas:
-                usuario, contrasena = linea.strip().split(',')
-                usuarios[usuario] = contrasena
-
-            return usuarios
-
     def iniciarSesion(self):
-
         self.mensaje = QMessageBox()
-        usuarios = self.leerPlano('Archivos/usuarios.txt')
-        nombre_usuario = self.txtUsuario.text()
-        contrasena = self.txtContrasena.text()
-        if nombre_usuario in usuarios:
-            if usuarios[nombre_usuario] == contrasena:
-                self.txtUsuario.setText("")
-                self.txtContrasena.setText("")
-                verRol = self.leerPlano('Archivos/roles.txt')
-                self.rolUsuario = verRol[nombre_usuario]
-
-
-
-
-
-                Ayudas.rol = self.rolUsuario
-                Ayudas.usuario = nombre_usuario
-                self.pantalla2 = Pantalla2(self)
-                # Mostrar la ventana nueva
-                self.hide()
-                self.pantalla2.show()
-
-            else:
-                self.mensaje.setIcon(QMessageBox.Warning)
-                self.mensaje.setWindowTitle("Datos incorrectos")
-                self.mensaje.setInformativeText('La contraseña para el usuario ingresada es incorrecta')
-                self.txtContrasena.setText("")
-                self.mensaje.exec_()
-        else:
+        if self.txtUsuario.text() == "" and self.txtContrasena.text() == "":
             self.mensaje.setIcon(QMessageBox.Warning)
             self.mensaje.setWindowTitle("Datos incorrectos")
-            self.mensaje.setInformativeText('El usuario ingresado no se encuentra registrado')
+            self.mensaje.setInformativeText('Por favor diligenciar todos los campos')
             self.txtUsuario.setText("")
             self.txtContrasena.setText("")
             self.mensaje.exec_()
+        else:
 
-        self.checkBox.setChecked(False)
+            self.file = open('Archivos/datos.txt', 'rb')
+            usuarios = []
+            while self.file:
+                linea = self.file.readline().decode('UTF-8')
+                lista = linea.split(";")
+                # paramos el bucle si ya no encuentra más registros en el archivo
+                if linea == '':
+                    break
+                u = Usuarios(lista[0],
+                             lista[1],
+                             lista[2],
+                             lista[3],
+                             lista[4],
+                             lista[5],
+                             lista[6],
+                             lista[7])
+                # Agregar los datos a la lista
+                usuarios.append(u)
+                # cerramos ael archivo txt
+            self.file.close()
+            existeDocumento = False
+            existeClave = False
+            for u in usuarios:
+                if u.documento == self.txtUsuario.text():
+                    existeDocumento = True
+                    if u.clave == self.txtContrasena.text():
+                        existeClave = True
+                        Ayudas.usuario = u.nombreCompleto
+                        Ayudas.rol = u.rol
+                        self.pantalla2 = Pantalla2(self)
+                        # Mostrar la ventana nueva
+                        self.txtUsuario.setText("")
+                        self.txtContrasena.setText("")
+                        self.hide()
+                        self.pantalla2.show()
+                        break
+                    break
+
+            if not existeDocumento:
+                self.mensaje.setIcon(QMessageBox.Warning)
+                self.mensaje.setWindowTitle("Datos incorrectos")
+                self.mensaje.setInformativeText('El usuario ingresado no se encuentra registrado')
+                self.txtUsuario.setText("")
+                self.txtContrasena.setText("")
+                self.mensaje.exec_()
+
+            elif not existeClave:
+                self.mensaje.setIcon(QMessageBox.Warning)
+                self.mensaje.setWindowTitle("Datos incorrectos")
+                self.mensaje.setInformativeText('La contraseña ingresada es incorrecta')
+                self.txtContrasena.setText("")
+                self.mensaje.exec_()
+
+            self.checkBox.setChecked(False)
     def salir(self):
         self.close()
 
