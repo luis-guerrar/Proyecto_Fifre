@@ -2,3 +2,4 @@
 1040753154;123456;Administrador;Sebastián;Ramírez Rendón;sebas.240796@gmail.com;Madera;3189654236
 1077462451;123456;Cajero;Luis Fernando;Guerra Rueda;luidguerr@gmai.com;Manrique;3206589874
 1020407032;123456;Administrador;Sergio;Del Rio Rueda;sergio@losandes.com;Manrique;3216548596
+1;1;Administrador;Sergio;Del Rio Rueda;sergio@losandes.com;Manrique;3216548596
