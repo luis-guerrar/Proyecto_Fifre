@@ -193,7 +193,7 @@ class Administrar(QMainWindow):
         self.btnEditar.clicked.connect(self.accionBtnEditar)
         self.ladoDerecho.addWidget(self.btnEditar)
 
-        self.btnEliminar = QPushButton("Editar")
+        self.btnEliminar = QPushButton("Eliminar")
         self.btnEliminar.setFixedWidth(186)
         self.btnEliminar.setStyleSheet("background-color: #008B45;"
                                      "color: #FFFFFF;"
