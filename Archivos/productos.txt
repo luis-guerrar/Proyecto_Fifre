@@ -1,0 +1,2 @@
+1;Arroz;Arroz Roa, Calidad premium;1200;ninguna
+2;Papa;Papa Capira, Limpia, sin mugre;3000;ninguna

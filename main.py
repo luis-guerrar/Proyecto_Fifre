@@ -1,5 +1,6 @@
 import sys
 
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QLabel, QMainWindow, QApplication, QFormLayout, \
@@ -17,7 +18,7 @@ class InicioSesion(QMainWindow):
         super().__init__()
         # Poner título
         self.setWindowTitle("Inicio sesión")
-
+        self.setWindowIcon(QtGui.QIcon('imagenes/icono.png'))
         # Establecer el ancho y el alto
         self.ancho = 1400
         self.alto = 600

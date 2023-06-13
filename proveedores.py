@@ -37,7 +37,8 @@ class Proveedores(QMainWindow):
         self.titulo1.setText("La información de los productos y proveedores será ingresada en esta página")
         # Para centrar el letrero
         self.titulo1.setAlignment(Qt.AlignCenter)
-        self.titulo1.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px;')
+        self.titulo1.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px; '
+                                   'border-radius: 15px; margin-bottom: 50px;')
         self.titulo1.setFont(QFont("Andale Mono", 12))
         # para poner el letrero arriba
         self.vertical.addWidget(self.titulo1)

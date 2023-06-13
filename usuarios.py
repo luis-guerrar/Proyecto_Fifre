@@ -12,3 +12,16 @@ class Usuarios:
 
     def __str__(self):
         return f"Nombre: {self.nombreCompleto} Documento: {self.documento}"
+
+class Productos:
+    def __init__(self, codigo, producto, descripcion, precio, recetas):
+        self.codigo = codigo
+        self.producto = producto
+        self.descripcion = descripcion
+        self.precio = precio
+        self.recetas = recetas
+
+
+    def __str__(self):
+        return f"Nombre: {self.codigo} Documento: {self.producto}"
+

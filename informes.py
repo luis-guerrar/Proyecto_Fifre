@@ -1,3 +1,4 @@
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QWidget, QVBoxLayout, QLabel, QPushButton
@@ -12,6 +13,7 @@ class Informes(QMainWindow):
         rol = Ayudas.rol
         usuario = Ayudas.usuario
         self.setWindowTitle(f"Fifre | {usuario}")
+        self.setWindowIcon(QtGui.QIcon('imagenes/icono.png'))
         # Establecer el ancho y el alto
         self.ancho = Ayudas.ancho
         self.alto = Ayudas.alto
