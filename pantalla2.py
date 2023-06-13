@@ -1,3 +1,4 @@
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QLabel, QFormLayout, QLineEdit, QPushButton, QMessageBox, \
@@ -18,6 +19,7 @@ class Pantalla2(QMainWindow):
         usuario = Ayudas.usuario
         self.ventanaAnterior = anterior
         self.setWindowTitle(f"Fifre | {usuario}")
+        self.setWindowIcon(QtGui.QIcon('imagenes/icono.png'))
         self.mensaje = QMessageBox()
         self.mensaje.setIcon(QMessageBox.Information)
         self.mensaje.setWindowTitle(f"Hola {usuario}")
@@ -35,7 +37,7 @@ class Pantalla2(QMainWindow):
         self.setFixedHeight(self.alto)
         # Establecemos el fondo principal
         self.fondo = QLabel(self)
-        self.imagenFondo = QPixmap('imagenes/Fondo4.png')
+        self.imagenFondo = QPixmap('imagenes/Fondo5.png')
         self.fondo.setPixmap(self.imagenFondo)
         self.fondo.setScaledContents(True)
 

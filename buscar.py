@@ -1,7 +1,12 @@
+import locale
+
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QFont, QIcon
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QWidget, QVBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, \
+    QFormLayout, QLineEdit, QDialog
 from ayudas import Ayudas
+from usuarios import Productos
+
 
 class Buscar(QMainWindow):
 
@@ -34,16 +39,74 @@ class Buscar(QMainWindow):
         # Diferencial
         self.vertical = QVBoxLayout()
         self.titulo1 = QLabel()
-        self.titulo1.setText("En esta sección podremos consultar los precios de los productos")
+        self.titulo1.setText("Consultar precios de los productos")
         # Para centrar el letrero
         self.titulo1.setAlignment(Qt.AlignCenter)
-        self.titulo1.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px;')
+        self.titulo1.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px; '
+                                   'border-radius: 15px; margin-bottom: 50px;')
         self.titulo1.setFont(QFont("Andale Mono", 12))
+        self.titulo1.setFixedSize(1880, 200)
         # para poner el letrero arriba
         self.vertical.addWidget(self.titulo1)
         self.fondo.setLayout(self.vertical)
+        # Construir la tabla de consulta de precios
+        self.horizontal = QHBoxLayout()
+        self.formulario = QFormLayout()
+        self.lblCodigo = QLabel("Código")
+        self.lblCodigo.setFont(QFont("Andale Mono", 15))
+        self.font = QFont()
+        self.font.setPointSize(14)
+        self.txtCodigo = QLineEdit()
+        self.txtCodigo.setFixedWidth(300)
+        self.txtCodigo.setFont(self.font)
+        self.formulario.addRow(self.lblCodigo, self.txtCodigo)
+        self.lblEspacio = QLabel("")
+        self.formulario.addRow(self.lblEspacio)
 
-        self.vertical.addStretch()
+        self.lblNombre = QLabel("Nombre")
+        self.lblNombre.setFont(QFont("Andale Mono", 15))
+        self.txtNombre = QLineEdit()
+        self.txtNombre.setFixedWidth(300)
+        self.txtNombre.setFont(self.font)
+        self.txtNombre.setReadOnly(True)
+        #self.txtNombre.resize(300, 200)
+        self.formulario.addRow(self.lblNombre, self.txtNombre)
+        self.lblEspacio = QLabel("")
+        self.formulario.addRow(self.lblEspacio)
+
+        self.lblPrecio = QLabel("Precio por Unidad")
+        self.lblPrecio.setFont(QFont("Andale Mono", 15))
+        self.formulario.addRow(self.lblPrecio)
+        self.lblPrecio.setStyleSheet('background-color:#1BBC9B; color:#F7F7F7; padding: 30px; border-radius: 15px;')
+        self.lblPrecio.setFixedSize(400, 100)
+
+        self.titulo2 = QLabel()
+        self.titulo2.setText(f"«La gastronomía es el arte de usar los alimentos para crear "
+                             f"felicidad». Theodore Zeldin\n\n"
+                             "En este segmento encontraras recetas cortas con el producto elegido")
+        # Para centrar el letrero
+        self.titulo2.setAlignment(Qt.AlignCenter)
+        self.titulo2.setStyleSheet('background-color:#ECF0F1; color:#000000; padding: 30px; border-radius: 15px;')
+        self.titulo2.setFont(QFont("Andale Mono", 12))
+
+        self.horizontal.addLayout(self.formulario)
+        self.horizontal.addSpacing(20)
+        self.horizontal.addWidget(self.titulo2)
+        self.vertical.addLayout(self.horizontal)
+
+        self.btnBuscar = QPushButton(self)
+        # Establecemos el ancho del botón
+        self.btnBuscar.setIcon(QIcon('imagenes/buscar2.png'))
+        self.btnBuscar.setFixedWidth(180)
+        self.btnBuscar.setIconSize(QSize(180, 180))
+        self.btnBuscar.setStyleSheet('background-color:transparent;')
+        self.horizontal.addWidget(self.btnBuscar)
+        self.btnBuscar.clicked.connect(self.accionbtnBuscar)
+
+
+
+
+
 
         # Hacemos un botón para regresar a la ventana1
         self.botonRegresar = QPushButton(self)
@@ -62,3 +125,59 @@ class Buscar(QMainWindow):
         self.hide()
         # Mostramos la ventana anterior
         self.ventanaMenu.show()
+    def accionbtnBuscar(self):
+        self.file = open('Archivos/productos.txt', 'rb')
+        usuarios = []
+        while self.file:
+            linea = self.file.readline().decode('UTF-8')
+            lista = linea.split(";")
+            # paramos el bucle si ya no encuentra más registros en el archivo
+            if linea == '':
+                break
+            u = Productos(lista[0],
+                          lista[1],
+                          lista[2],
+                          lista[3],
+                          lista[4])
+
+            # Agregar los datos a la lista
+            usuarios.append(u)
+            # cerramos ael archivo txt
+        self.file.close()
+        existeCodigo = False
+        for u in usuarios:
+            if u.codigo == self.txtCodigo.text():
+                existeCodigo = True
+                locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
+                self.pago = (locale.currency(float(u.precio), grouping=True))
+                self.txtNombre.setText(u.producto)
+                self.lblPrecio.setText(f"{self.pago}")
+                self.titulo2.setText(f"«La gastronomía es el arte de usar los alimentos para crear "
+                                     f"felicidad». Theodore Zeldin\n\n"
+                                     f"Para este producto tenemos la siguiente receta: {u.recetas}")
+
+
+
+
+        if not existeCodigo:
+            self.dialogo2 = QDialog(self)
+            self.dialogo2.setWindowTitle("Error")
+            self.dialogo2.setGeometry(300, 300, 200, 100)
+            self.layout = QVBoxLayout()
+            self.boton2 = QPushButton("Aceptar")
+            self.boton2.setStyleSheet('background-color:#1D9A08;')
+            self.boton2.setFixedWidth(300)
+            self.layout.addWidget(
+                QLabel(f"El código buscado ({self.txtCodigo.text()}), no se encuentra registrado\n"
+                       f"confírmalo e intenta de nuevo"))
+            self.txtCodigo.setText("")
+
+            self.boton2.clicked.connect(self.accion_boton2)
+            self.layout.addWidget(self.boton2)
+            self.dialogo2.setLayout(self.layout)
+
+            # Mostrar el cuadro de diálogo y bloquear la ejecución
+            self.dialogo2.exec_()
+
+    def accion_boton2(self):
+        self.dialogo2.close()
