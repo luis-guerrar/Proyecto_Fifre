@@ -356,6 +356,14 @@ class Compras(QMainWindow):
         self.dialogo2.close()
 
     def accion_boton3(self):
+        self.titulo1.setText("Registrar los productos")
+        locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
+        self.pago = 0
+
+        for row in range(self.tabla.rowCount()):
+            item = self.tabla.item(row, 5)
+            if item is not None and item.text():
+                self.pago += float(item.text())
         self.dialogo2.close()
         self.tabla.setRowCount(0)
         self.fechaHoy = datetime.date.today()
