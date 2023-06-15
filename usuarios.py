@@ -14,12 +14,18 @@ class Usuarios:
         return f"Nombre: {self.nombreCompleto} Documento: {self.documento}"
 
 class Productos:
-    def __init__(self, codigo, producto, descripcion, precio, recetas):
+    def __init__(self, codigo, producto, descripcion, precio, nombreP, nit, tel, cel, monto, fecha):
         self.codigo = codigo
         self.producto = producto
         self.descripcion = descripcion
         self.precio = precio
-        self.recetas = recetas
+        self.nombreP = nombreP
+        self.nit = nit
+        self.tel = tel
+        self.cel = cel
+        self.monto = monto
+        self.fecha = fecha
+
 
 
     def __str__(self):

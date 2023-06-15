@@ -1,9 +1,9 @@
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QTableWidget, \
-    QTableWidgetItem, QHBoxLayout, QFormLayout, QLineEdit
+    QTableWidgetItem, QHBoxLayout, QFormLayout, QLineEdit, QMessageBox, QToolBar, QAction, QComboBox
 from ayudas import Ayudas
-from usuarios import Usuarios
+from usuarios import Usuarios, Productos
 
 
 class Administrar(QMainWindow):
@@ -36,179 +36,181 @@ class Administrar(QMainWindow):
 
         # Layout
         self.vertical = QVBoxLayout()
-        self.titulo1 = QLabel()
-        self.titulo1.setText("En esta pantalla el administrador podrá agregar borrar y editar los perfiles de usuario")
-        # Para centrar el letrero
-        self.titulo1.setAlignment(Qt.AlignCenter)
-        self.titulo1.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px;')
-        self.titulo1.setFont(QFont("Andale Mono", 12))
-        # para poner el letrero arriba
-        self.vertical.addWidget(self.titulo1)
+        # CONSTRUIR EL MENÚ TOOL BAR
+        self.toolbar = QToolBar('Main toolbar')
+        self.toolbar.setIconSize(QSize(80, 80))
+        self.toolbar.setFloatable(False)
+        self.addToolBar(self.toolbar)
 
-        self.vertical.addStretch()
+        # Borrar Campos
+        self.delete = QAction(QIcon('imagenes/limpiar.png'), '&Eliminar', self)
+        self.delete.triggered.connect(self.limpiar)
+        self.toolbar.addAction(self.delete)
 
-        # -------- AGREGAR EL CRUD ------------------
-        self.file = open('Archivos/datos.txt', 'rb')
-        self.usuarios = []
-        while self.file:
-            linea = self.file.readline().decode('UTF-8')
-            lista = linea.split(";")
-            # paramos el bucle si ya no encuentra más registros en el archivo
-            if linea == '':
-                break
-            u = Usuarios(lista[0],
-                         lista[1],
-                         lista[2],
-                         lista[3],
-                         lista[4],
-                         lista[5],
-                         lista[6],
-                         lista[7])
-            # Agregar los datos a la lista
-            self.usuarios.append(u)
-            # cerramos ael archivo txt
-        self.file.close()
-        self.numeroUsuarios = len(self.usuarios)
-        self.contador = 0
-        self.scrollArea = QScrollArea()
-        self.scrollArea.setWidgetResizable(True)
-        # Creamos la tabla
-        self.tabla = QTableWidget()
-        self.tabla.setColumnCount(7)
-        # Definimos el ancho de las columnas
-        self.tabla.setColumnWidth(0, 200)
-        self.tabla.setColumnWidth(1, 200)
-        self.tabla.setColumnWidth(2, 200)
-        self.tabla.setColumnWidth(3, 200)
-        self.tabla.setColumnWidth(4, 200)
-        self.tabla.setColumnWidth(5, 200)
-        self.tabla.setColumnWidth(6, 200)
-        # Definimos los encabezados de la tabla
-        self.tabla.setHorizontalHeaderLabels(["Documento", "Nombre Completo", "Apellidos",
-                                              "Rol", "Correo", "Dirección", "Teléfono"])
+        # Regenerar Clave
+        self.regenerarC = QAction(QIcon('imagenes/regenerar.png'), '&Regenerar Clave', self)
+        self.regenerarC.triggered.connect(self.regenerar)
+        self.toolbar.addAction(self.regenerarC)
 
-        self.tabla.setRowCount(self.numeroUsuarios)
-        for u in self.usuarios:
-            self.tabla.setItem(self.contador, 0, QTableWidgetItem(u.documento))
-            self.tabla.setItem(self.contador, 1, QTableWidgetItem(u.nombreCompleto))
-            self.tabla.setItem(self.contador, 2, QTableWidgetItem(u.apellidos))
-            self.tabla.setItem(self.contador, 3, QTableWidgetItem(u.rol))
-            self.tabla.setItem(self.contador, 4, QTableWidgetItem(u.correo))
-            self.tabla.setItem(self.contador, 5, QTableWidgetItem(u.direccion))
-            self.tabla.setItem(self.contador, 6, QTableWidgetItem(u.telefono))
-            # Aumentamos el contador
-            self.contador += 1
-
-            self.scrollArea.setWidget(self.tabla)
-            self.vertical.addWidget(self.scrollArea)
-            self.vertical.addStretch()
-
-        # ---------- SE CONSTRUYE EL LAYOUT HORIZONTAL ---------------
+        # Layout horizontal
         self.horizontal = QHBoxLayout()
+        # Le ponemos las márgenes
+        self.horizontal.setContentsMargins(30, 30, 30, 30)
 
-        # -------------- Lado izquierdo ------------------------------
+        # ---------- Layout izquierdo -----------
+
+        # Creamos el layout del lado izquierdo
         self.ladoIzquierdo = QFormLayout()
 
+        # ---------------- TODO EL CÓDIGO DEL LAGO IZQUIERDO INICIA EN ESTA SECCIÓN ---------------------#
+
+        # ETIQUETAS Y LINEAS DE TEXTO
+        # -----Código
         self.lblDocumento = QLabel("Documento")
-        self.lblDocumento.setFont(QFont("Andale Mono", 14))
-        self.lblDocumento.setStyleSheet("color:black;")
+        self.lblDocumento.setFont(QFont("Andale Mono", 15))
+        self.lblDocumento.setStyleSheet("color:black; margin-bottom: 30px;")
+        self.font = QFont()
+        self.font.setPointSize(14)
         self.txtDocumento = QLineEdit()
-        self.txtDocumento.setFixedWidth(320)
+        self.txtDocumento.setFixedWidth(300)
+        self.txtDocumento.setFont(self.font)
+        self.txtDocumento.setPlaceholderText("Número documento")
         self.ladoIzquierdo.addRow(self.lblDocumento, self.txtDocumento)
 
-        self.lblRol = QLabel("Rol")
-        self.lblRol.setFont(QFont("Andale Mono", 14))
-        self.lblRol.setStyleSheet("color:Black;")
-        self.txtRol = QLineEdit()
-        self.txtRol.setFixedWidth(320)
+        # -----Nombre
+        self.lblNombre = QLabel("Nombres")
+        self.lblNombre.setFont(QFont("Andale Mono", 15))
+        self.lblNombre.setStyleSheet("color:black; margin-bottom: 30px;")
+        self.font.setPointSize(14)
+        self.txtNombre = QLineEdit()
+        self.txtNombre.setFixedWidth(300)
+        self.txtNombre.setFont(self.font)
+        self.txtNombre.setPlaceholderText("Nombre usuario")
+        self.ladoIzquierdo.addRow(self.lblNombre, self.txtNombre)
+
+        # -----Precio
+        self.lblApellidos = QLabel("Apellidos")
+        self.lblApellidos.setFont(QFont("Andale Mono", 15))
+        self.lblApellidos.setStyleSheet("color:black; margin-bottom: 30px;")
+        self.font.setPointSize(14)
+        self.txtApellidos = QLineEdit()
+        self.txtApellidos.setFixedWidth(300)
+        self.txtApellidos.setFont(self.font)
+        self.txtApellidos.setPlaceholderText("Apellidos usuario")
+        self.ladoIzquierdo.addRow(self.lblApellidos, self.txtApellidos)
+
+        # -----Rol
+        self.lblRol = QLabel("Rol usuario")
+        self.setFont(QFont("Andale Mono", 15))
+        self.lblRol.setStyleSheet("color:black; margin-bottom: 30px;")
+        self.font.setPointSize(14)
+        self.lblRol.setFont(self.font)
+        self.txtRol = QComboBox(self)
+        self.txtRol.setFixedWidth(300)
+        self.txtRol.setFont(self.font)
+        self.txtRol.addItem("Cajero")
+        self.txtRol.addItem("Supervisor")
+        self.txtRol.addItem("Administrador")
         self.ladoIzquierdo.addRow(self.lblRol, self.txtRol)
 
-        self.lblNombres = QLabel("Nombres")
-        self.lblNombres.setFont(QFont("Andale Mono", 14))
-        self.lblNombres.setStyleSheet("color:black;")
-        self.txtNombres = QLineEdit()
-        self.txtNombres.setFixedWidth(320)
-        self.ladoIzquierdo.addRow(self.lblNombres, self.txtNombres)
+        # ---------- Layout derecho -----------
 
-        self.lblApellidos = QLabel("Apellidos")
-        self.lblApellidos.setFont(QFont("Andale Mono", 14))
-        self.lblApellidos.setStyleSheet("color:black;")
-        self.txtApellidos = QLineEdit()
-        self.txtApellidos.setFixedWidth(320)
-        self.ladoIzquierdo.addRow(self.lblApellidos, self.txtApellidos)
-        self.horizontal.addLayout(self.ladoIzquierdo)
-
-        self.lyCentro = QFormLayout()
-
-        self.lblCorreo = QLabel("Correo")
-        self.lblCorreo.setFont(QFont("Andale Mono", 14))
-        self.lblCorreo.setStyleSheet("color:black;")
-        self.txtCorreo = QLineEdit()
-        self.txtCorreo.setFixedWidth(320)
-        self.lyCentro.addRow(self.lblCorreo, self.txtCorreo)
-
-
-        self.lblDireccion = QLabel("Dirección")
-        self.lblDireccion.setFont(QFont("Andale Mono", 14))
-        self.lblDireccion.setStyleSheet("color:black;")
-        self.txtDireccion = QLineEdit()
-        self.txtDireccion.setFixedWidth(320)
-        self.lyCentro.addRow(self.lblDireccion, self.txtDireccion)
-
-        self.lblTelefono = QLabel("Teléfono")
-        self.lblTelefono.setFont(QFont("Andale Mono", 14))
-        self.lblTelefono.setStyleSheet("color:black; margin-bottom: 45px;")
-        self.txtTelefono = QLineEdit()
-        self.txtTelefono.setFixedWidth(320)
-        self.lyCentro.addRow(self.lblTelefono, self.txtTelefono)
-        self.horizontal.addLayout(self.lyCentro)
-
-
-
-        # -------------- Lado Derecho ------------------------------
+        # Creamos el layout del lado izquierdo
         self.ladoDerecho = QFormLayout()
 
-        self.lblTitulo = QLabel()
-        self.lblTitulo.setText("Opciones de\n   Usuario")
-        self.lblTitulo.setFont(QFont("Andale Mono", 20))
-        self.lblTitulo.setAlignment(Qt.AlignLeft)
-        self.lblTitulo.setStyleSheet("color:Black;")
-        self.ladoDerecho.addRow(self.lblTitulo)
+        # ---------------- TODO EL CÓDIGO DEL LADO DERECHO INICIA EN ESTA SECCIÓN ---------------------#
 
-        self.btnAgregar = QPushButton("Agregar")
-        self.btnAgregar.setFixedWidth(186)
-        self.btnAgregar.setStyleSheet("background-color: #008B45;"
+        # ETIQUETAS Y LINEAS DE TEXTO
+        # -----Celular
+        self.lblCel = QLabel("Celular")
+        self.lblCel.setFont(QFont("Andale Mono", 15))
+        self.lblCel.setStyleSheet("color:black; margin-bottom: 30px;")
+        self.font = QFont()
+        self.font.setPointSize(14)
+        self.txtCel = QLineEdit()
+        self.txtCel.setFixedWidth(300)
+        self.txtCel.setFont(self.font)
+        self.txtCel.setPlaceholderText("Número celular usuario")
+        self.ladoDerecho.addRow(self.lblCel, self.txtCel)
+
+        # -----Correo
+        self.lblCorreo = QLabel("Correo")
+        self.lblCorreo.setFont(QFont("Andale Mono", 15))
+        self.lblCorreo.setStyleSheet("color:black; margin-bottom: 30px;")
+        self.font.setPointSize(14)
+        self.txtCorreo = QLineEdit()
+        self.txtCorreo.setFixedWidth(300)
+        self.txtCorreo.setFont(self.font)
+        self.txtCorreo.setPlaceholderText("Correo usuario")
+        self.ladoDerecho.addRow(self.lblCorreo, self.txtCorreo)
+
+        # -----Dirección
+        self.lblDir = QLabel("Dirección")
+        self.lblDir.setFont(QFont("Andale Mono", 15))
+        self.lblDir.setStyleSheet("color:black; margin-bottom: 30px;")
+        self.font.setPointSize(14)
+        self.txtDir = QLineEdit()
+        self.txtDir.setFixedWidth(300)
+        self.txtDir.setFont(self.font)
+        self.txtDir.setPlaceholderText("Dirección usuario")
+        self.ladoDerecho.addRow(self.lblDir, self.txtDir)
+
+        # Título
+        self.letreroP = QLabel()
+        self.letreroP.setText("Consulta y registro de usuarios")
+        self.letreroP.setFont(QFont("Andale Mono", 20))
+        self.letreroP.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px; '
+                                    'border-radius: 15px;')
+        self.letreroP.setAlignment(Qt.AlignCenter)
+
+        # ------Botón registrar
+        self.btnRegistrar = QPushButton("Registrar")
+        self.btnRegistrar.setFixedWidth(300)
+        self.btnRegistrar.setIconSize(QSize(180, 180))
+        self.btnRegistrar.setStyleSheet("background-color: #1BBC9B;"
+                                        "color: #FFFFFF;"
+                                        "padding: 10px;"
+                                        "margin-top: 40px;")
+        self.btnRegistrar.clicked.connect(self.accionBtnRegistrar)
+
+        # ------Botón consultar
+        self.btnCosultar = QPushButton("Consultar")
+        self.btnCosultar.setFixedWidth(180)
+        self.btnCosultar.setIconSize(QSize(180, 180))
+        self.btnCosultar.setStyleSheet("background-color: #1BBC9B;"
                                        "color: #FFFFFF;"
-                                       "padding: 10px;")
+                                       "padding: 10px;"
+                                       "margin-top: 40px;")
+        self.btnCosultar.clicked.connect(self.accionBtnCosultar)
+        self.ladoIzquierdo.addRow(self.btnCosultar, self.btnRegistrar)
 
-        self.btnAgregar.clicked.connect(self.accionBtnAgregar)
-        self.ladoDerecho.addWidget(self.btnAgregar)
-
+        # ------Botón editar
         self.btnEditar = QPushButton("Editar")
-        self.btnEditar.setFixedWidth(186)
-        self.btnEditar.setStyleSheet("background-color: #008B45;"
+        self.btnEditar.setFixedWidth(300)
+        self.btnEditar.setIconSize(QSize(180, 180))
+        self.btnEditar.setStyleSheet("background-color: #1BBC9B;"
                                      "color: #FFFFFF;"
-                                     "padding: 10px;")
-
+                                     "padding: 10px;"
+                                     "margin-top: 40px;")
         self.btnEditar.clicked.connect(self.accionBtnEditar)
-        self.ladoDerecho.addWidget(self.btnEditar)
 
+        # ------Botón eliminar
         self.btnEliminar = QPushButton("Eliminar")
-        self.btnEliminar.setFixedWidth(186)
-        self.btnEliminar.setStyleSheet("background-color: #008B45;"
-                                     "color: #FFFFFF;"
-                                     "padding: 10px;")
-
+        self.btnEliminar.setFixedWidth(180)
+        self.btnEliminar.setIconSize(QSize(180, 180))
+        self.btnEliminar.setStyleSheet("background-color: #1BBC9B;"
+                                       "color: #FFFFFF;"
+                                       "padding: 10px;"
+                                       "margin-top: 40px;")
         self.btnEliminar.clicked.connect(self.accionBtnEliminar)
-        self.ladoDerecho.addWidget(self.btnEliminar)
+        self.ladoDerecho.addRow(self.btnEliminar, self.btnEditar)
 
 
 
-
-
-
-
-
+        # Agregamos el letrero en la línea siguiente:
+        self.vertical.addWidget(self.letreroP)
+        self.vertical.addStretch()
+        self.horizontal.addLayout(self.ladoIzquierdo)
         self.horizontal.addLayout(self.ladoDerecho)
         self.vertical.addLayout(self.horizontal)
 
@@ -229,18 +231,351 @@ class Administrar(QMainWindow):
 
         self.fondo.setLayout(self.vertical)
         # Hacemos el método para volver
-
-    def accionBtnAgregar(self):
-        pass
-
     def accionBotonRegresar(self):
         # Ocultamos la ventana actual
         self.hide()
         # Mostramos la ventana anterior
         self.ventanaMenu.show()
 
+    def accionBtnRegistrar(self):
+        if (self.txtDocumento.text() == ''
+                or self.txtNombre.text() == ''
+                or self.txtApellidos.text() == ''
+                or self.txtRol.currentText() == ''
+                or self.txtCel.text() == ''
+                or self.txtCorreo.text() == ''
+                or self.txtDir.text() == ''):
+
+            return QMessageBox.warning(self, 'Cuidado',
+                                       f"Por favor diligenciar\ntodos los campos")
+        else:
+            self.file = open('Archivos/datos.txt', 'rb')
+            usuarios = []
+            while self.file:
+                linea = self.file.readline().decode('UTF-8')
+                lista = linea.split(";")
+                # paramos el bucle si ya no encuentra más registros en el archivo
+                if linea == '':
+                    break
+                u = Usuarios(lista[0],
+                              lista[1],
+                              lista[2],
+                              lista[3],
+                              lista[4],
+                              lista[5],
+                              lista[6],
+                              lista[7],)
+
+                # Agregar los datos a la lista
+                usuarios.append(u)
+                # cerramos ael archivo txt
+            self.file.close()
+            existeCodigo = False
+            self.total = 0
+            for u in usuarios:
+                if u.documento == self.txtDocumento.text():
+                    existeCodigo = True
+                    self.txtDocumento.setText(u.documento)
+                    self.txtNombre.setText(u.nombreCompleto)
+                    self.txtApellidos.setText(u.apellidos)
+                    self.txtRol.setCurrentText(u.rol)
+                    self.txtCel.setText(u.telefono)
+                    self.txtCorreo.setText(u.correo)
+                    self.txtDir.setText(u.direccion)
+                    return QMessageBox.warning(self, 'Cuidado',
+                                               "El usuario que intenta registrar\n"
+                                               "ya existe, a continuación se\n"
+                                               "cargarán los datos registrados")
+
+            if not existeCodigo:
+                self.file = open('Archivos/datos.txt', 'ab')
+                self.file.write(bytes(
+                    self.txtDocumento.text() + ";"
+                    + "123456" + ";"
+                    + self.txtRol.currentText() + ";"
+                    + self.txtNombre.text() + ";"
+                    + self.txtApellidos.text() + ";"
+                    + self.txtCorreo.text() + ";"
+                    + self.txtDir.text() + ";"
+                    + self.txtCel.text() + "\n", encoding='UTF-8'))
+                self.file.close()
+                self.limpiar()
+                return QMessageBox.information(self, 'Cuidado',
+                                               "El usuario se registró correctamente")
+
+    def accionBtnCosultar(self):
+        self.file = open('Archivos/datos.txt', 'rb')
+        usuarios = []
+        while self.file:
+            linea = self.file.readline().decode('UTF-8')
+            lista = linea.split(";")
+            # paramos el bucle si ya no encuentra más registros en el archivo
+            if linea == '':
+                break
+            u = Usuarios(lista[0],
+                         lista[1],
+                         lista[2],
+                         lista[3],
+                         lista[4],
+                         lista[5],
+                         lista[6],
+                         lista[7], )
+
+            # Agregar los datos a la lista
+            usuarios.append(u)
+            # cerramos ael archivo txt
+        self.file.close()
+        existeCodigo = False
+        self.total = 0
+        for u in usuarios:
+            if u.documento == self.txtDocumento.text():
+                existeCodigo = True
+                self.txtDocumento.setText(u.documento)
+                self.txtDocumento.setReadOnly(True)
+                self.txtNombre.setText(u.nombreCompleto)
+                self.txtApellidos.setText(u.apellidos)
+                self.txtRol.setCurrentText(u.rol)
+                self.txtCel.setText(u.telefono)
+                self.txtCorreo.setText(u.correo)
+                self.txtDir.setText(u.direccion)
+        if not existeCodigo:
+            self.limpiar()
+            return QMessageBox.warning(self, 'Cuidado', 'El usuario que intenta buscar\n nose encuentra registrado')
+
     def accionBtnEditar(self):
-        pass
+        if (self.txtDocumento.text() == ''
+                or self.txtNombre.text() == ''
+                or self.txtApellidos.text() == ''
+                or self.txtRol.currentText() == ''
+                or self.txtCel.text() == ''
+                or self.txtCorreo.text() == ''
+                or self.txtDir.text() == ''):
+            return QMessageBox.warning(self, 'Cuidado', 'Para realizar la edición '
+                                                        'todos los\ncampos deben estar diligenciados')
+        else:
+            self.file = open('Archivos/datos.txt', 'rb')
+            usuarios = []
+            while self.file:
+                linea = self.file.readline().decode('UTF-8')
+                lista = linea.split(";")
+                # paramos el bucle si ya no encuentra más registros en el archivo
+                if linea == '':
+                    break
+                u = Usuarios(lista[0],
+                             lista[1],
+                             lista[2],
+                             lista[3],
+                             lista[4],
+                             lista[5],
+                             lista[6],
+                             lista[7], )
+
+                # Agregar los datos a la lista
+                usuarios.append(u)
+                # cerramos ael archivo txt
+            self.file.close()
+            self.boton = QMessageBox.question(
+                self,
+                'Confirmación',
+                'Esta seguro que desea editar este usuario',
+                QMessageBox.StandardButton.Yes |
+                QMessageBox.StandardButton.No)
+            existeCodigo = False
+            if self.boton == QMessageBox.StandardButton.Yes:
+                for u in usuarios:
+                    if u.documento == self.txtDocumento.text():
+                        existeCodigo = True
+                        u.nombreCompleto = self.txtNombre.text()
+                        u.apellidos = self.txtApellidos.text()
+                        u.rol = self.txtRol.currentText()
+                        u.telefono = self.txtCel.text()
+                        u.correo = self.txtCorreo.text()
+                        u.direccion = self.txtDir.text()
+                        break
+
+                # Ingresar los datos con el registro editado
+                if existeCodigo:
+                    self.file = open('Archivos/datos.txt', 'wb')
+                    for u in usuarios:
+                        self.file.write(bytes(u.documento + ";"
+                                              + u.clave + ";"
+                                              + u.rol + ";"
+                                              + u.nombreCompleto + ";"
+                                              + u.apellidos + ";"
+                                              + u.correo + ";"
+                                              + u.direccion + ";"
+                                              + u.telefono, encoding='UTF-8'))
+                    self.file.close()
+                    self.limpiar()
+                    self.txtDocumento.setReadOnly(False)
+                    return QMessageBox.question(
+                                self,
+                                'Confirmación',
+                                'El usuarios se editó correctamente',
+                                QMessageBox.StandardButton.Ok)
+                else:
+                    self.limpiar()
+                    self.txtCodigo.setReadOnly(False)
+                    self.txtNombre.setReadOnly(False)
+                    return QMessageBox.warning(
+                        self,
+                        'Confirmación',
+                        'El usuario que intenta editar no se encuentra registrado',
+                        QMessageBox.StandardButton.Ok)
 
     def accionBtnEliminar(self):
-        pass
+        if (self.txtDocumento.text() == ''
+                or self.txtNombre.text() == ''
+                or self.txtApellidos.text() == ''
+                or self.txtRol.currentText() == ''
+                or self.txtCel.text() == ''
+                or self.txtCorreo.text() == ''
+                or self.txtDir.text() == ''):
+            return QMessageBox.warning(self, 'Cuidado', 'Por favor seleccionar un documento válido\n'
+                                                        ' se recomienda primero buscar con el código')
+        else:
+            self.file = open('Archivos/datos.txt', 'rb')
+            usuarios = []
+            while self.file:
+                linea = self.file.readline().decode('UTF-8')
+                lista = linea.split(";")
+                # paramos el bucle si ya no encuentra más registros en el archivo
+                if linea == '':
+                    break
+                u = Usuarios(lista[0],
+                             lista[1],
+                             lista[2],
+                             lista[3],
+                             lista[4],
+                             lista[5],
+                             lista[6],
+                             lista[7], )
+
+                # Agregar los datos a la lista
+                usuarios.append(u)
+                # cerramos ael archivo txt
+            self.file.close()
+            self.boton = QMessageBox.question(
+                self,
+                'Confirmación',
+                'Esta seguro que desea eliminar este usuario',
+                QMessageBox.StandardButton.Yes |
+                QMessageBox.StandardButton.No)
+            existeCodigo = False
+            if self.boton == QMessageBox.StandardButton.Yes:
+                for u in usuarios:
+                    if u.documento == self.txtDocumento.text():
+                        existeCodigo = True
+                        usuarios.remove(u)
+                        break
+
+                # Ingresar los datos con el registro editado
+                if existeCodigo:
+                    self.file = open('Archivos/datos.txt', 'wb')
+                    for u in usuarios:
+                        self.file.write(bytes(u.documento + ";"
+                                              + u.clave + ";"
+                                              + u.rol + ";"
+                                              + u.nombreCompleto + ";"
+                                              + u.apellidos + ";"
+                                              + u.correo + ";"
+                                              + u.direccion + ";"
+                                              + u.telefono, encoding='UTF-8'))
+                    self.file.close()
+                    self.limpiar()
+                    self.txtDocumento.setReadOnly(False)
+                    return QMessageBox.question(
+                        self,
+                        'Confirmación',
+                        'El usuario se editó correctamente',
+                        QMessageBox.StandardButton.Ok)
+                else:
+                    self.limpiar()
+                    self.txtCodigo.setReadOnly(False)
+                    self.txtNombre.setReadOnly(False)
+                    return QMessageBox.warning(
+                        self,
+                        'Confirmación',
+                        'El usuario que intenta editar no se encuentra registrado',
+                        QMessageBox.StandardButton.Ok)
+
+    def limpiar(self):
+        self.txtDocumento.setText('')
+        self.txtNombre.setText('')
+        self.txtApellidos.setText('')
+        self.txtRol.setCurrentIndex(0)
+        self.txtCel.setText('')
+        self.txtCorreo.setText('')
+        self.txtDir.setText('')
+        self.txtDocumento.setReadOnly(False)
+
+    def regenerar(self):
+        self.accionBtnCosultar()
+        if self.txtDocumento.text() == '':
+            return QMessageBox.warning(self, 'Cuidado', 'Para realizar la regeneración '
+                                                        'debe\ndiligenciar el documento')
+        else:
+            self.file = open('Archivos/datos.txt', 'rb')
+            usuarios = []
+            while self.file:
+                linea = self.file.readline().decode('UTF-8')
+                lista = linea.split(";")
+                # paramos el bucle si ya no encuentra más registros en el archivo
+                if linea == '':
+                    break
+                u = Usuarios(lista[0],
+                             lista[1],
+                             lista[2],
+                             lista[3],
+                             lista[4],
+                             lista[5],
+                             lista[6],
+                             lista[7], )
+
+                # Agregar los datos a la lista
+                usuarios.append(u)
+                # cerramos ael archivo txt
+            self.file.close()
+            self.boton = QMessageBox.question(
+                self,
+                'Confirmación',
+                '¿Esta seguro que desea regenerar la clave?',
+                QMessageBox.StandardButton.Yes |
+                QMessageBox.StandardButton.No)
+            existeCodigo = False
+            if self.boton == QMessageBox.StandardButton.Yes:
+                for u in usuarios:
+                    if u.documento == self.txtDocumento.text():
+                        existeCodigo = True
+                        u.clave = "123456"
+                        break
+
+                # Ingresar los datos con el registro editado
+                if existeCodigo:
+                    self.file = open('Archivos/datos.txt', 'wb')
+                    for u in usuarios:
+                        self.file.write(bytes(u.documento + ";"
+                                              + u.clave + ";"
+                                              + u.rol + ";"
+                                              + u.nombreCompleto + ";"
+                                              + u.apellidos + ";"
+                                              + u.correo + ";"
+                                              + u.direccion + ";"
+                                              + u.telefono, encoding='UTF-8'))
+                    self.file.close()
+                    self.limpiar()
+                    self.txtDocumento.setReadOnly(False)
+                    return QMessageBox.question(
+                        self,
+                        'Confirmación',
+                        'Se regeneró la clave correctamente',
+                        QMessageBox.StandardButton.Ok)
+                else:
+                    self.limpiar()
+                    self.txtCodigo.setReadOnly(False)
+                    self.txtNombre.setReadOnly(False)
+                    return QMessageBox.warning(
+                        self,
+                        'Confirmación',
+                        'No se encuentra registrado ningún usuario con el documento proporcionado',
+                        QMessageBox.StandardButton.Ok)

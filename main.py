@@ -49,26 +49,26 @@ class InicioSesion(QMainWindow):
 
         # Escribimos el título
         self.lblTitulo = QLabel()
-        self.lblTitulo.setText("Inicio de sesión")
+        self.lblTitulo.setText(" Inicio de sesión")
         self.lblTitulo.setFont(QFont("Andale Mono", 40))
         self.lblTitulo.setAlignment(Qt.AlignLeft)
-        self.lblTitulo.setStyleSheet("color:Black; padding: 50px; border-radius: 10px; margin-bottom: 50px;")
+        self.lblTitulo.setStyleSheet("color:Black; padding: 50px; border-radius: 10px; "
+                                     "margin-bottom: 50px;padding-left: 60px;")
 
         # Label y texto del usuario
         self.lblUsuario = QLabel()
         self.lblUsuario.setText("Usuario")
         self.lblUsuario.setFont(QFont("Andale Mono", 12))
-        self.lblUsuario.setStyleSheet("color:black; margin-bottom: 50px;")
+        self.lblUsuario.setStyleSheet("color:black; margin-bottom: 50px; padding-left: 130px;")
         self.txtUsuario = QLineEdit()
         self.txtUsuario.setPlaceholderText("Ingrese su nombre de usuario")
-
         self.txtUsuario.setFixedWidth(200)
 
         # Label y texto de la contraseña
         self.lblContrasena = QLabel()
         self.lblContrasena.setText("Contraseña")
         self.lblContrasena.setFont(QFont("Andale Mono", 12))
-        self.lblContrasena.setStyleSheet("color:black; border-radius: 10px;")
+        self.lblContrasena.setStyleSheet("color:black; border-radius: 10px; padding-left: 130px;")
         self.txtContrasena = QLineEdit()
         self.txtContrasena.setEchoMode(QLineEdit.Password)
         self.txtContrasena.setPlaceholderText("Ingrese su contraseña")
@@ -83,7 +83,7 @@ class InicioSesion(QMainWindow):
 
         # Casilla ver clave
         self.checkBox = QCheckBox("Mostrar contraseña")
-        self.checkBox.setStyleSheet("margin-bottom: 50px;")
+        self.checkBox.setStyleSheet("margin-bottom: 30px;")
         self.negrita = QFont()
         self.negrita.setBold(True)
         self.checkBox.setFont(self.negrita)
@@ -100,9 +100,10 @@ class InicioSesion(QMainWindow):
 
         # Botón enviar
         self.btnEnviar = QPushButton("Iniciar sesión")
-        self.btnEnviar.setFixedWidth(200)
+        self.btnEnviar.setFixedWidth(300)
         self.btnEnviar.setFont(QFont("Andale Mono", 14))
-        self.btnEnviar.setStyleSheet("color:black;")
+        self.btnEnviar.setStyleSheet("color:black;margin-left: 130px;")
+        self.btnEnviar.setFixedHeight(37)
         self.btnEnviar.clicked.connect(self.iniciarSesion)
 
         # Botón salir
@@ -161,8 +162,15 @@ class InicioSesion(QMainWindow):
                     existeDocumento = True
                     if u.clave == self.txtContrasena.text():
                         existeClave = True
-                        Ayudas.usuario = u.nombreCompleto
+                        Ayudas.documento = u.documento
+                        Ayudas.clave = u.clave
                         Ayudas.rol = u.rol
+                        Ayudas.usuario = u.nombreCompleto
+                        Ayudas.apellido = u.apellidos
+                        Ayudas.correo = u.correo
+                        Ayudas.dirreccion = u.direccion
+                        Ayudas.celular = u.telefono
+
                         self.pantalla2 = Pantalla2(self)
                         # Mostrar la ventana nueva
                         self.txtUsuario.setText("")

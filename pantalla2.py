@@ -52,10 +52,10 @@ class Pantalla2(QMainWindow):
         self.addToolBar(self.barraHerramientas)
         self.compras = QAction(QIcon("imagenes/Compras.png"), "Registro de los productos | Facturas", self)
         self.proveedores = QAction(QIcon("imagenes/Proveedores.png"), "Ingreso de mercancía | Proveedores", self)
-        self.cerrarCaja = QAction(QIcon("imagenes/Cerrar.png"), "Cierre de caja | Validar ventas y recepción "
-                                                                "de productos", self)
+        '''self.cerrarCaja = QAction(QIcon("imagenes/Cerrar.png"), "Cierre de caja | Validar ventas y recepción "
+                                                                "de productos", self)'''
         self.buscar = QAction(QIcon("imagenes/Buscar.png"), "Consultar el valor de los productos | Buscar", self)
-        self.informes = QAction(QIcon("imagenes/Informes.png"), "Gráficos", self)
+        self.informes = QAction(QIcon("imagenes/perfil.png"), "Mi perfil", self)
         self.salir = QAction(QIcon("imagenes/Salir.png"), "Cerrar sesión | Salir", self)
         self.administrar = QAction(QIcon("imagenes/Administrar.png"), "Crear y modificar usuarios | Administrar", self)
 
@@ -63,7 +63,7 @@ class Pantalla2(QMainWindow):
             self.barraHerramientas.addAction(self.compras)
             self.barraHerramientas.addAction(self.buscar)
             self.barraHerramientas.addAction(self.proveedores)
-            self.barraHerramientas.addAction(self.cerrarCaja)
+            '''self.barraHerramientas.addAction(self.cerrarCaja)'''
             self.barraHerramientas.addAction(self.informes)
             self.barraHerramientas.addAction(self.administrar)
             self.barraHerramientas.addAction(self.salir)
@@ -72,12 +72,14 @@ class Pantalla2(QMainWindow):
             self.barraHerramientas.addAction(self.compras)
             self.barraHerramientas.addAction(self.buscar)
             self.barraHerramientas.addAction(self.proveedores)
-            self.barraHerramientas.addAction(self.cerrarCaja)
+            self.barraHerramientas.addAction(self.informes)
+            '''self.barraHerramientas.addAction(self.cerrarCaja)'''
             self.barraHerramientas.addAction(self.salir)
 
         else:
             self.barraHerramientas.addAction(self.compras)
             self.barraHerramientas.addAction(self.buscar)
+            self.barraHerramientas.addAction(self.informes)
             self.barraHerramientas.addAction(self.salir)
 
         # Activamos la barra de herramientas
@@ -120,7 +122,7 @@ class Pantalla2(QMainWindow):
             # Mostrar la ventana nueva
             self.cerrarCaja.show()
 
-        elif opcion.text() == "Gráficos":
+        elif opcion.text() == "Mi perfil":
             # Creamos una nueva ventana
             self.informes = Informes(self)
             self.hide()

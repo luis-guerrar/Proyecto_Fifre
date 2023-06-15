@@ -44,11 +44,11 @@ class Compras(QMainWindow):
         # Diferencial
         self.vertical = QVBoxLayout()
         self.titulo1 = QLabel()
-        self.titulo1.setText("Registrar los productos")
+        self.titulo1.setText("Facturación de productos")
         # Para centrar el letrero
         self.titulo1.setAlignment(Qt.AlignCenter)
         self.titulo1.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px; border-radius: 15px;')
-        self.titulo1.setFont(QFont("Andale Mono", 12))
+        self.titulo1.setFont(QFont("Andale Mono", 20))
         # para poner el letrero arriba
         self.vertical.addWidget(self.titulo1)
         self.fondo.setLayout(self.vertical)
@@ -64,7 +64,7 @@ class Compras(QMainWindow):
         self.toolbar.addAction(self.delete)
 
         # Agregar
-        self.add = QAction(QIcon('imagenes/add.png'), '&Add', self)
+        self.add = QAction(QIcon('imagenes/add.png'), '&Agregar', self)
         self.add.triggered.connect(self.accionAdd)
         self.toolbar.addAction(self.add)
 
@@ -126,14 +126,14 @@ class Compras(QMainWindow):
 
         self.btnAgregar = QPushButton("Agregar")
         self.btnAgregar.setStyleSheet('background-color:#1D9A08;')
-        self.btnAgregar.setFixedWidth(150)
+        self.btnAgregar.setFixedWidth(300)
         self.btnAgregar.clicked.connect(self.accionBtnAgregar)
 
-        self.btnTotal = QPushButton("Total")
-        self.btnTotal.setStyleSheet('background-color:#1D9A08;')
-        self.btnTotal.setFixedWidth(300)
-        self.btnTotal.clicked.connect(self.accionBtnTotal)
-        self.formulario.addRow(self.btnAgregar, self.btnTotal)
+        self.btnEditar = QPushButton("Editar")
+        self.btnEditar.setStyleSheet('background-color:#1D9A08;')
+        self.btnEditar.setFixedWidth(150)
+        self.btnEditar.clicked.connect(self.accionBtnEditar)
+        self.formulario.addRow(self.btnEditar, self.btnAgregar)
 
 
 
@@ -153,7 +153,7 @@ class Compras(QMainWindow):
         if Ayudas.rol == "Cajero":
             self.dialogo = QDialog(self)
             self.dialogo.setWindowTitle("Se requiere clave administrador")
-            self.dialogo.setGeometry(300, 300, 200, 100)
+            self.dialogo.setGeometry(900, 500, 200, 100)
             self.layout = QVBoxLayout()
             self.boton1 = QPushButton("Enviar")
             self.boton1.setStyleSheet('background-color:#1D9A08;')
@@ -162,7 +162,9 @@ class Compras(QMainWindow):
             self.txtClave.setFixedWidth(300)
             self.txtClave.setEchoMode(QLineEdit.Password)
             self.layout.addWidget(self.txtClave)
-            self.layout.addWidget(QLabel("Ingrese por favor una clave de administrador\no supervisor "))
+            self.lblMensaje = QLabel("Ingrese por favor una clave \nde administrador o supervisor")
+            self.lblMensaje.setFont(QFont("Andale Mono", 12))
+            self.layout.addWidget(self.lblMensaje)
 
             self.boton1.clicked.connect(self.accion_boton1)
             self.layout.addWidget(self.boton1)
@@ -173,6 +175,15 @@ class Compras(QMainWindow):
 
         else:
             self.tabla.removeRow(self.tabla.currentRow())
+            locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
+            self.pago = 0
+            for row in range(self.tabla.rowCount()):
+                item = self.tabla.item(row, 5)
+                if item is not None and item.text():
+                    self.pago += float(item.text())
+            self.vrPago = (locale.currency(self.pago, grouping=True))
+            self.titulo1.setText(f"Facturación de productos. Hasta ahora el total de la compra es: {self.vrPago}")
+            self.txtCodigo.setText("")
 
     def accionAdd(self):
         self.ultimaFila = self.tabla.rowCount()
@@ -188,30 +199,29 @@ class Compras(QMainWindow):
                 total += float(item.text())
         self.vrPago = (locale.currency(total, grouping=True))
 
-        self.dialogo2 = QDialog(self)
-        self.dialogo2.setWindowTitle("Finalizar compra")
-        self.dialogo2.setGeometry(300, 300, 200, 100)
-        self.layout = QVBoxLayout()
-        self.boton2 = QPushButton("No")
-        self.boton2.setStyleSheet('background-color:#1D9A08;')
-        self.boton2.setFixedWidth(150)
-        self.boton3 = QPushButton("Sí")
-        self.boton3.setStyleSheet('background-color:#1D9A08;')
-        self.boton3.setFixedWidth(150)
-        self.layout.addWidget(QLabel(f"El valor total de los productos registrados es:\n"
-                                     f"{self.vrPago} ¿Desea finalizar?"))
+        self.boton = QMessageBox.question(
+            self,
+            'Confirmación',
+            f'El valor total de los productos registrados es:\n'
+            f'{self.vrPago} ¿Desea finalizar?',
+            QMessageBox.StandardButton.Yes |
+            QMessageBox.StandardButton.No)
+        if self.boton == QMessageBox.StandardButton.Yes:
+            self.titulo1.setText("Registrar los productos")
+            locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
+            self.pago = 0
+            for row in range(self.tabla.rowCount()):
+                item = self.tabla.item(row, 5)
+                if item is not None and item.text():
+                    self.pago += float(item.text())
+            self.tabla.setRowCount(0)
+            self.fechaHoy = datetime.date.today()
+            with open('Archivos/ventas.txt', 'a') as archivo:
+                archivo.write(f"{self.fechaHoy};{self.pago}\n")
 
-        self.boton2.clicked.connect(self.accion_boton2)
-        self.boton3.clicked.connect(self.accion_boton3)
-        self.layout.addWidget(self.boton2)
-        self.layout.addWidget(self.boton3)
-        self.dialogo2.setLayout(self.layout)
-
-        self.dialogo2.exec_()
 
     def accionBtnAgregar(self):
         self.ultimaFila = self.tabla.rowCount()
-        self.tabla.insertRow(self.ultimaFila)
         self.file = open('Archivos/productos.txt', 'rb')
         usuarios = []
         while self.file:
@@ -221,10 +231,15 @@ class Compras(QMainWindow):
             if linea == '':
                 break
             u = Productos(lista[0],
-                         lista[1],
-                         lista[2],
-                         lista[3],
-                         lista[4])
+                          lista[1],
+                          lista[2],
+                          lista[3],
+                          lista[4],
+                          lista[5],
+                          lista[6],
+                          lista[7],
+                          lista[8],
+                          lista[9],)
 
             # Agregar los datos a la lista
             usuarios.append(u)
@@ -235,6 +250,7 @@ class Compras(QMainWindow):
         for u in usuarios:
             if u.codigo == self.txtCodigo.text():
                 existeCodigo = True
+                self.tabla.insertRow(self.ultimaFila)
                 self.tabla.setItem(self.ultimaFila, 0, QTableWidgetItem(u.codigo))
                 self.tabla.item(self.ultimaFila, 0).setFlags(Qt.ItemIsEnabled)
                 self.tabla.setItem(self.ultimaFila, 1, QTableWidgetItem(u.producto))
@@ -244,43 +260,73 @@ class Compras(QMainWindow):
                 self.tabla.setItem(self.ultimaFila, 3, QTableWidgetItem(u.precio))
                 self.tabla.item(self.ultimaFila, 3).setFlags(Qt.ItemIsEnabled)
                 self.tabla.setItem(self.ultimaFila, 4, QTableWidgetItem(self.txtCantidad.text()))
-                self.tabla.item(self.ultimaFila, 4).setFlags(Qt.ItemIsEnabled)
+                self.tabla.item(self.ultimaFila, 4).setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
                 self.total = int(self.txtCantidad.text())*int(u.precio)
                 self.tabla.setItem(self.ultimaFila, 5, QTableWidgetItem(str(self.total)))
                 self.tabla.item(self.ultimaFila, 5).setFlags(Qt.ItemIsEnabled)
+                locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
+                self.pago = 0
+                for row in range(self.tabla.rowCount()):
+                    item = self.tabla.item(row, 5)
+                    if item is not None and item.text():
+                        self.pago += float(item.text())
+                self.vrPago = (locale.currency(self.pago, grouping=True))
+                self.titulo1.setText(f"Facturación de productos. Hasta ahora el total de la compra es: {self.vrPago}")
                 self.txtCodigo.setText("")
                 self.txtCantidad.setText("")
 
                 break
         if not existeCodigo:
+            return QMessageBox.warning(self, 'Cuidado',
+                                       f"El código buscado ({self.txtCodigo.text()}), no se encuentra registrado\n"
+                                       f"confírmalo e intenta de nuevo")
+    def accionBtnEditar(self):
+        self.selection = self.tabla.selectedItems()
+        if len(self.selection) > 0:
             self.dialogo2 = QDialog(self)
-            self.dialogo2.setWindowTitle("Error")
-            self.dialogo2.setGeometry(300, 300, 200, 100)
+            self.dialogo2.setWindowTitle("Modificar compra")
+            self.dialogo2.setGeometry(900, 500, 200, 100)
             self.layout = QVBoxLayout()
-            self.boton2 = QPushButton("Aceptar")
-            self.boton2.setStyleSheet('background-color:#1D9A08;')
-            self.boton2.setFixedWidth(300)
-            self.layout.addWidget(QLabel(f"El código buscado ({self.txtCodigo.text()}), no se encuentra registrado\n"
-                                         f"confírmalo e intenta de nuevo"))
-            self.txtCodigo.setText("")
-
-            self.boton2.clicked.connect(self.accion_boton2)
-            self.layout.addWidget(self.boton2)
+            self.boton1 = QPushButton("Aceptar")
+            self.boton1.setStyleSheet('background-color:#1D9A08;')
+            self.boton1.setFixedWidth(300)
+            self.lblMensaje = QLabel("Ingresar la cantidad deseada")
+            self.lblMensaje.setFont(QFont("Andale Mono", 12))
+            self.layout.addWidget(self.lblMensaje)
+            self.txtCantidad = QLineEdit()
+            self.txtCantidad.setFixedWidth(300)
+            self.layout.addWidget(self.txtCantidad)
+            self.boton1.clicked.connect(self.accion_boton2)
+            self.layout.addWidget(self.boton1)
             self.dialogo2.setLayout(self.layout)
 
             # Mostrar el cuadro de diálogo y bloquear la ejecución
             self.dialogo2.exec_()
-    def accionBtnTotal(self):
+            if self.txtCantidad.text().isdigit() and int(self.txtCantidad.text()) >0:
+                self.columna = self.tabla.currentRow()
+                self.tabla.setItem(self.columna, 4, QTableWidgetItem(self.txtCantidad.text()))
+                self.tabla.item(self.ultimaFila, 4).setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                self.item = self.tabla.item(self.columna, 3)
+                self.precio = self.item.text()
+                self.total = int(self.txtCantidad.text()) * int(self.precio)
+                self.tabla.setItem(self.columna, 5, QTableWidgetItem(str(self.total)))
+                self.tabla.item(self.columna, 5).setFlags(Qt.ItemIsEnabled)
+                locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
+                self.pago = 0
+                for row in range(self.tabla.rowCount()):
+                    item = self.tabla.item(row, 5)
+                    if item is not None and item.text():
+                        self.pago += float(item.text())
+                self.vrPago = (locale.currency(self.pago, grouping=True))
+                self.titulo1.setText(f"Facturación de productos. Hasta ahora el total de la compra es: {self.vrPago}")
 
-        locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
-        self.pago = 0
 
-        for row in range(self.tabla.rowCount()):
-            item = self.tabla.item(row, 5)
-            if item is not None and item.text():
-                self.pago += float(item.text())
-        self.vrPago = (locale.currency(self.pago, grouping=True))
-        self.titulo1.setText(f"Registrar los productos, hasta ahora el total de la compra es: {self.vrPago}")
+            else:
+                return QMessageBox.warning(self, 'Cuidado',
+                                           "Debe ingresar solo números y que\nsean mayores que cero")
+        else:
+            return QMessageBox.warning(self, 'Cuidado',
+                                       f"Debe seleccionar el\nregistro que desea editar")
 
     def accion_boton1(self):
         clave = self.txtClave.text()
@@ -310,63 +356,34 @@ class Compras(QMainWindow):
                 self.existeClave = True
                 # print(u.nombreCompleto)
                 if u.rol == "Cajero":
-                    self.dialogo2 = QDialog(self)
-                    self.dialogo2.setWindowTitle("Se requiere clave administrador")
-                    self.dialogo2.setGeometry(300, 300, 200, 100)
-                    self.layout = QVBoxLayout()
-                    self.boton2 = QPushButton("Aceptar")
-                    self.boton2.setStyleSheet('background-color:#1D9A08;')
-                    self.boton2.setFixedWidth(300)
-                    self.layout.addWidget(QLabel(f"La clave del usuario {u.nombreCompleto} con rol {u.rol} no tiene\n"
-                                                 f"permisos para la acción que intenta realizar"))
-
-                    self.boton2.clicked.connect(self.accion_boton2)
-                    self.layout.addWidget(self.boton2)
-                    self.dialogo2.setLayout(self.layout)
-
                     # Mostrar el cuadro de diálogo y bloquear la ejecución
                     self.dialogo.close()
-                    self.dialogo2.exec_()
+                    return QMessageBox.warning(self, 'Cuidado',
+                                               f"La clave del usuario {u.nombreCompleto} \ncon rol {u.rol} no tiene "
+                                               f"permisos \npara la acción que intenta realizar")
 
                 else:
                     self.tabla.removeRow(self.tabla.currentRow())
                     self.dialogo.close()
+                    locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
+                    self.pago = 0
+                    for row in range(self.tabla.rowCount()):
+                        item = self.tabla.item(row, 5)
+                        if item is not None and item.text():
+                            self.pago += float(item.text())
+                    self.vrPago = (locale.currency(self.pago, grouping=True))
+                    self.titulo1.setText(
+                        f"Facturación de productos. Hasta ahora el total de la compra es: {self.vrPago}")
+                    self.txtCodigo.setText("")
 
 
         if not self.existeClave:
-            self.dialogo2 = QDialog(self)
-            self.dialogo2.setWindowTitle("Se requiere clave administrador")
-            self.dialogo2.setGeometry(300, 300, 200, 100)
-            self.layout = QVBoxLayout()
-            self.boton2 = QPushButton("Aceptar")
-            self.boton2.setStyleSheet('background-color:#1D9A08;')
-            self.boton2.setFixedWidth(300)
-            self.layout.addWidget(QLabel("La clave ingresada no pertenece\n"
-                                         "a ninguno de los usuarios registrados"))
-
-            self.boton2.clicked.connect(self.accion_boton2)
-            self.layout.addWidget(self.boton2)
-            self.dialogo2.setLayout(self.layout)
-
             # Mostrar el cuadro de diálogo y bloquear la ejecución
             self.dialogo.close()
-            self.dialogo2.exec_()
+            return QMessageBox.warning(self, 'Cuidado',
+                                       "La clave ingresada no pertenece\n"
+                                       "a ninguno de los usuarios registrados")
 
     def accion_boton2(self):
         self.dialogo2.close()
 
-    def accion_boton3(self):
-        self.titulo1.setText("Registrar los productos")
-        locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
-        self.pago = 0
-
-        for row in range(self.tabla.rowCount()):
-            item = self.tabla.item(row, 5)
-            if item is not None and item.text():
-                self.pago += float(item.text())
-        self.dialogo2.close()
-        self.tabla.setRowCount(0)
-        self.fechaHoy = datetime.date.today()
-        with open('Archivos/proveedores.txt', 'a') as archivo:
-            archivo.write(f"{self.fechaHoy};{self.pago}")
-            archivo.write("\n")

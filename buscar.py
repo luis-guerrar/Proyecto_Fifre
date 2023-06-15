@@ -44,7 +44,7 @@ class Buscar(QMainWindow):
         self.titulo1.setAlignment(Qt.AlignCenter)
         self.titulo1.setStyleSheet('background-color:#434343; color:#F7F7F7; padding: 30px; '
                                    'border-radius: 15px; margin-bottom: 50px;')
-        self.titulo1.setFont(QFont("Andale Mono", 12))
+        self.titulo1.setFont(QFont("Andale Mono", 20))
         self.titulo1.setFixedSize(1880, 200)
         # para poner el letrero arriba
         self.vertical.addWidget(self.titulo1)
@@ -52,6 +52,7 @@ class Buscar(QMainWindow):
         # Construir la tabla de consulta de precios
         self.horizontal = QHBoxLayout()
         self.formulario = QFormLayout()
+
         self.lblCodigo = QLabel("Código")
         self.lblCodigo.setFont(QFont("Andale Mono", 15))
         self.font = QFont()
@@ -69,7 +70,6 @@ class Buscar(QMainWindow):
         self.txtNombre.setFixedWidth(300)
         self.txtNombre.setFont(self.font)
         self.txtNombre.setReadOnly(True)
-        #self.txtNombre.resize(300, 200)
         self.formulario.addRow(self.lblNombre, self.txtNombre)
         self.lblEspacio = QLabel("")
         self.formulario.addRow(self.lblEspacio)
@@ -83,7 +83,7 @@ class Buscar(QMainWindow):
         self.titulo2 = QLabel()
         self.titulo2.setText(f"«La gastronomía es el arte de usar los alimentos para crear "
                              f"felicidad». Theodore Zeldin\n\n"
-                             "En este segmento encontraras recetas cortas con el producto elegido")
+                             "En este segmento encontraras la descripción de los productos")
         # Para centrar el letrero
         self.titulo2.setAlignment(Qt.AlignCenter)
         self.titulo2.setStyleSheet('background-color:#ECF0F1; color:#000000; padding: 30px; border-radius: 15px;')
@@ -102,11 +102,6 @@ class Buscar(QMainWindow):
         self.btnBuscar.setStyleSheet('background-color:transparent;')
         self.horizontal.addWidget(self.btnBuscar)
         self.btnBuscar.clicked.connect(self.accionbtnBuscar)
-
-
-
-
-
 
         # Hacemos un botón para regresar a la ventana1
         self.botonRegresar = QPushButton(self)
@@ -138,7 +133,12 @@ class Buscar(QMainWindow):
                           lista[1],
                           lista[2],
                           lista[3],
-                          lista[4])
+                          lista[4],
+                          lista[5],
+                          lista[6],
+                          lista[7],
+                          lista[8],
+                          lista[9])
 
             # Agregar los datos a la lista
             usuarios.append(u)
@@ -154,10 +154,7 @@ class Buscar(QMainWindow):
                 self.lblPrecio.setText(f"{self.pago}")
                 self.titulo2.setText(f"«La gastronomía es el arte de usar los alimentos para crear "
                                      f"felicidad». Theodore Zeldin\n\n"
-                                     f"Para este producto tenemos la siguiente receta: {u.recetas}")
-
-
-
+                                     f"Para este producto tenemos la siguiente descripción: {u.descripcion}")
 
         if not existeCodigo:
             self.dialogo2 = QDialog(self)

@@ -1,2 +1,7 @@
-1;Arroz;Arroz Roa, Calidad premium;1200;ninguna
-2;Papa;Papa Capira, Limpia, sin mugre;3000;ninguna
+1;Arroz;Arroz Roa, Calidad premium;1200;Mayorista;900821489;2549875;3102569874;258000;lunes
+2;Papa;Papa Capira, Limpia, sin mugres;3000;Minorista;900821489;2549875;3102569874;258000;Martes
+3;Aceite;Aceite oliva, Calidad premium;5000;Minorista;900821489;2549875;3102569874;258000;lunes
+4;Panela;Valluna, calidad premium;2500;ninguna;900821489;2549875;3102569874;258000;lunes
+5;Doritos;PASABOCA MEGAQUESO 10 UND DORITOS 340 gramos;1800;Natipan;900898754;3489865;3180000000;320000;lunes
+6;Papas Margaritas;Irresistibles papas fritas de excelente calidad e increíble sabor, tus papas Margaritas son la opción perfecta para que te acompañen en toda ocasión.;2100;Frito Lay;900987546;6548596;3150000000;52000;Martes
+7;Pastas Largas;Déjate sorprender por el delicioso mundo de La Muñeca;2500;La Muñeca;900500000;2560000;3180000000;65000;miercoles

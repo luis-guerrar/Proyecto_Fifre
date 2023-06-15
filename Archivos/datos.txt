@@ -1,4 +1,8 @@
-1000001255;123457;Supervisor;Manuela;Jurado;manuela.jurado@elpoli;Amagá;3156987584
-1040753154;123458;Administrador;Sebastián;Ramírez Rendón;sebas.240796@gmail.com;Madera;3189654236
-1077462451;654321;Cajero;Luis Fernando;Guerra Rueda;luidguerr@gmai.com;Manrique;3206589874
+1000001255;123458;Supervisor;Manuela;Jurado;manuela.jurado@elpoli;Amagá;3156987584
+1040753154;123457;Administrador;Sebastián;Ramírez Rendón;sebas.240796@gmail.com;Madera;3189654236
+1077462451;654321;Cajero;Luis Fernando;Guerra Rueda;luidguerr@gmai.com;Manrique;3200000000
 1020407032;123456;Administrador;Sergio;Del Rio Rueda;sergio@losandes.com;Manrique;3216548596
+1;1;Administrador;Prueba;Prueba2;sergio@losandes.com;Manrique;3216548596
+2;2;Supervisor;Juan Gabriel;Guerra;2;2;2
+3;3;Cajero;3;3;3;3;3
+5;5;Cajero;5;5;5;7;310008
